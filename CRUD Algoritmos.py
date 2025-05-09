@@ -4,8 +4,8 @@ import json
 # Verify if archive exist
 def arquivoexiste(nome):
     try:
-        a = open(nome, 'rt')
-        a.close()
+        with open(nome, 'r', encoding='utf-8') as arquivo:
+            json.load(arquivo)
 
     except FileNotFoundError:
         return False
@@ -16,10 +16,11 @@ def arquivoexiste(nome):
 # Create archive.
 def criararquivo(nome):
     try:
-        a = open(nome, 'wt+').write(' - Livros: \n')
-        a.close()
+        with open(nome, 'w', encoding='utf-8') as arquivo:
+            json.dump(obj = [], fp=arquivo, ensure_ascii=False, indent=2) # Faz o dump do json com uma lista.
 
-    except:
+    except Exception as erro:
+        print(erro)
         print('Falha na criação do arquivo')
 
 # Default menu print.
@@ -34,18 +35,21 @@ def menu(opcoes):
 def adicionar(livro):
     verificacao_livro = False
 
-    with open(arquivo, 'r+', encoding='utf-8') as txt:
-        for linha in txt.readlines(): 
-            if (f'{livro}\n').upper().replace(' ', '') == linha.upper().replace(' ', ''):
+    with open(arquivo, 'r+', encoding='utf-8') as arquivo_json:
+        dados = json.load(arquivo_json)
+        for dicionario in dados: 
+            if str(livro).upper().replace(' ', '') == str(dicionario).upper().replace(' ', ''):
                 verificacao_livro = True
 
     if verificacao_livro:
         return "*Livro já adicionado*"
 
     else:
-        with open(arquivo, 'a+', encoding='utf-8') as txt:
-            txt.write(f'{livro}\n')
-            return f"Livro adicionado."
+
+        lista_livros.append(livro)
+        with open(arquivo, 'w+', encoding='utf-8') as arquivo_json:
+            json.dump(lista_livros, fp=arquivo_json, ensure_ascii=False, indent=2)
+            return "Livro adicionado."
 
 # def function visualize book.
 def visualizar():
@@ -84,7 +88,6 @@ def atualizar(indice_livro, atributo, novo_atributo):
             return "Livro atualizado."
         return "*Livro para atualização não encontrado*"
 
-
 # def function search book.
 def buscar():
     ''
@@ -109,6 +112,9 @@ livro = {
     'EDITORA': '',
     'ISBN': ''
 }
+
+with open(arquivo, 'r+', encoding='utf-8') as arquivo_json:
+    lista_livros = json.load(arquivo_json)
 
 # Interation menu.
 while True:
