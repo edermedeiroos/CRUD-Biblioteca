@@ -1,5 +1,4 @@
 import json
-# TODO - Transfer .txt data to .json
 
 # Verify if archive exist
 def arquivoexiste(nome):
@@ -57,7 +56,7 @@ def adicionar(livro):
 def visualizar(data, start=0):
     indice = 1
 
-    # Show archieve formated
+    # Show formated archieve
     for dicionario in data[start:]:
         print(f'{indice}. {dicionario}'
                 .replace('{', '').replace('}', '')
@@ -87,12 +86,18 @@ def buscar(atributo, procurado):
             if dicionario[atributo].upper() == procurado.upper():
                 achados.append(dicionario) # If founded, append the dict to found list.
         
-    return achados
-                
+    return achados            
 
 # def function delete book.
-def deletar():
-    ''
+def deletar(livro):
+    livro_removido = lista_livros[livro - 1]['NOME']
+
+    del lista_livros[livro - 1] # Delete book parameter
+
+    # Dump json with new book list
+    with open(arquivo, 'w+', encoding='utf-8') as arquivo_json: 
+        json.dump(lista_livros, fp=arquivo_json, ensure_ascii=False, indent=2)
+        return f"Livro {livro_removido} removido da biblioteca."
 
 # archive verification/creation
 arquivo = "biblioteca.json"
@@ -159,7 +164,7 @@ while True:
 
             # Verify index choice type raising error in except ValueError/TypeError
             try:
-                item = int(input('- Livro para atualização [índice]: '))
+                item = int(input('- Atualizar Livro [índice]: '))
                 with open(arquivo, 'r', encoding='utf-8') as arquivo_json:
                     loaded = json.load(arquivo_json)
 
@@ -199,11 +204,29 @@ while True:
                 print(f"\nForam achados {len(resultado)} resultados para sua pesquisa: \n")
                 visualizar(resultado)
 
-
         # Execute delete book function
         elif opcao == 5:
             print(f'{"<Deletar Livro>":^150}\n')
-            deletar()
+            with open(arquivo, 'r', encoding='utf-8') as arquivo_json:
+                loaded = json.load(arquivo_json)
+                visualizar(loaded) # Visualize books function
+                
+            # Verify index choice type raising error in except ValueError/TypeError
+            try:
+                deletado = int(input("\n- Deletar livro [índice]: "))
+                confirm = input(f"\n*AVISO: O LIVRO [{loaded[deletado - 1]['NOME']}] SERÁ DELETADO*\nDeseja confirmar? [S/N] ")
+
+                if deletado not in range(1, len(loaded) + 1): # Verify if index is in the json range.
+                    raise IndexError
+                
+            except (ValueError):
+                print("\n*Digite apenas números*\n")
+
+            except(IndexError):
+                print("\n*Índice do livro desconhecido*\n")
+
+            if confirm.strip().upper() in 'SIM': # Confirm delete
+                print(deletar(deletado))
 
         # End program option
         elif opcao == -1:
