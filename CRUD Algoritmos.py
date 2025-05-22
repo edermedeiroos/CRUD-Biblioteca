@@ -24,11 +24,10 @@ def criararquivo(nome):
 
 # Default menu print.
 def menu(opcoes):
-    indice = 1
 
-    for opcao in opcoes:
-        print(f"[{indice}] {opcao}")
-        indice += 1
+    for indice, opcao in enumerate(opcoes):
+        print(f"[{indice + 1}] {opcao}")
+    print()
 
 # def function add book.
 def adicionar(livro):
@@ -54,14 +53,12 @@ def adicionar(livro):
 
 # def function visualize book.
 def visualizar(data, start=0):
-    indice = 1
 
     # Show formated archieve
-    for dicionario in data[start:]:
-        print(f'{indice}. {dicionario}'
+    for indice, dicionario in enumerate(data[start:]):
+        print(f'{indice + 1}. {dicionario}'
                 .replace('{', '').replace('}', '')
                 .replace("'", '').replace(', ', ' | '))
-        indice += 1
 
 # def function update book.
 def atualizar(indice_livro, atributo, novo_atributo):
@@ -108,12 +105,7 @@ if not arquivoexiste(arquivo):
 # variables declaration
 opcoes = ["Adicionar Livro", "Visualizar Livros", "Atualizar Livro", "Buscar Livro", "Deletar Livro"]
 livro = {
-    'NOME': '',
-    'AUTOR': '',
-    'ASSUNTO': '',
-    'NUMERO DE PAGINAS': '',
-    'EDITORA': '',
-    'ISBN': ''
+    'NOME': '', 'AUTOR': '', 'ASSUNTO': '', 'NUMERO DE PAGINAS': '', 'EDITORA': '', 'ISBN': ''
 }
 
 # Loads .json to list
@@ -124,7 +116,6 @@ with open(arquivo, 'r+', encoding='utf-8') as arquivo_json:
 while True:
     print(f'\n{"BIBLIOTECA":^150}\n{"-"*150}')
     menu(opcoes)
-    print()
 
     # Verify choice type raising error in except ValueError/TypeError
     try:
